@@ -1,0 +1,19 @@
+desc: client streamingを行える
+runners:
+  greq:
+    addr: "http://127.0.0.1"
+    tls: true
+    cacert: "../../../../../ca.crt"
+    cert: "../../../../../ca.csr"
+    key: "../../../../../ca.key"
+steps:
+  - desc: リクエスト
+    greq:
+      sample_stream.v1.SampleStreamService/SampleClientStream:
+        messages:
+          - file_info:
+            name: "'test'"
+          - data: "'hello'"
+          - data: "'world'"
+    test: |
+      current.res.status == 1

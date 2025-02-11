@@ -39,8 +39,10 @@ func main() {
 	mux := http.NewServeMux()
 	path, handler := sampleStreamv1connect.NewSampleStreamServiceHandler(sampleStreamer)
 	mux.Handle(path, handler)
-	http.ListenAndServe(
-		"localhost:8080",
+	http.ListenAndServeTLS(
+		"127.0.0.1:443",
+		"../../server.crt",
+		"../../server.key",
 		// Use h2c so we can serve HTTP/2 without TLS.
 		h2c.NewHandler(mux, &http2.Server{}),
 	)
