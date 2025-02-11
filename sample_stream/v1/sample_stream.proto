@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sample_stream.v1;
+
+option go_package = "grpc_client_streaming_sample/gen/sampleStream/v1;sampleStreamv1";
+
+message SampleClientStreamRequest {
+	message FileInfo {
+		string name = 1;
+	}
+  oneof content{
+		FileInfo file_info = 1;
+		bytes data = 2;
+  }
+}
+
+message SampleClientStreamResponse {}
+
+service SampleStreamService {
+  rpc SampleClientStream(SampleClientStreamRequest) returns (SampleClientStreamResponse) {}
+}
