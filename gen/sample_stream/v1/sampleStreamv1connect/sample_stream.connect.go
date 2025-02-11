@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	v1 "grpc_client_streaming_sample/gen/sampleStream/v1"
+	v1 "grpc_client_streaming_sample/gen/sample_stream/v1"
 	http "net/http"
 	strings "strings"
 )
@@ -40,7 +40,7 @@ const (
 
 // SampleStreamServiceClient is a client for the sample_stream.v1.SampleStreamService service.
 type SampleStreamServiceClient interface {
-	SampleClientStream(context.Context, *connect.Request[v1.SampleClientStreamRequest]) (*connect.Response[v1.SampleClientStreamResponse], error)
+	SampleClientStream(context.Context) *connect.ClientStreamForClient[v1.SampleClientStreamRequest, v1.SampleClientStreamResponse]
 }
 
 // NewSampleStreamServiceClient constructs a client for the sample_stream.v1.SampleStreamService
@@ -69,14 +69,14 @@ type sampleStreamServiceClient struct {
 }
 
 // SampleClientStream calls sample_stream.v1.SampleStreamService.SampleClientStream.
-func (c *sampleStreamServiceClient) SampleClientStream(ctx context.Context, req *connect.Request[v1.SampleClientStreamRequest]) (*connect.Response[v1.SampleClientStreamResponse], error) {
-	return c.sampleClientStream.CallUnary(ctx, req)
+func (c *sampleStreamServiceClient) SampleClientStream(ctx context.Context) *connect.ClientStreamForClient[v1.SampleClientStreamRequest, v1.SampleClientStreamResponse] {
+	return c.sampleClientStream.CallClientStream(ctx)
 }
 
 // SampleStreamServiceHandler is an implementation of the sample_stream.v1.SampleStreamService
 // service.
 type SampleStreamServiceHandler interface {
-	SampleClientStream(context.Context, *connect.Request[v1.SampleClientStreamRequest]) (*connect.Response[v1.SampleClientStreamResponse], error)
+	SampleClientStream(context.Context, *connect.ClientStream[v1.SampleClientStreamRequest]) (*connect.Response[v1.SampleClientStreamResponse], error)
 }
 
 // NewSampleStreamServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -86,7 +86,7 @@ type SampleStreamServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewSampleStreamServiceHandler(svc SampleStreamServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	sampleStreamServiceMethods := v1.File_sample_stream_v1_sample_stream_proto.Services().ByName("SampleStreamService").Methods()
-	sampleStreamServiceSampleClientStreamHandler := connect.NewUnaryHandler(
+	sampleStreamServiceSampleClientStreamHandler := connect.NewClientStreamHandler(
 		SampleStreamServiceSampleClientStreamProcedure,
 		svc.SampleClientStream,
 		connect.WithSchema(sampleStreamServiceMethods.ByName("SampleClientStream")),
@@ -105,6 +105,6 @@ func NewSampleStreamServiceHandler(svc SampleStreamServiceHandler, opts ...conne
 // UnimplementedSampleStreamServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedSampleStreamServiceHandler struct{}
 
-func (UnimplementedSampleStreamServiceHandler) SampleClientStream(context.Context, *connect.Request[v1.SampleClientStreamRequest]) (*connect.Response[v1.SampleClientStreamResponse], error) {
+func (UnimplementedSampleStreamServiceHandler) SampleClientStream(context.Context, *connect.ClientStream[v1.SampleClientStreamRequest]) (*connect.Response[v1.SampleClientStreamResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("sample_stream.v1.SampleStreamService.SampleClientStream is not implemented"))
 }

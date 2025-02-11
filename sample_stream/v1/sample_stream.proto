@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package sample_stream.v1;
 
-option go_package = "grpc_client_streaming_sample/gen/sampleStream/v1;sampleStreamv1";
+option go_package = "grpc_client_streaming_sample/gen/sample_stream/v1;sampleStreamv1";
 
 message SampleClientStreamRequest {
 	message FileInfo {
@@ -17,5 +17,5 @@ message SampleClientStreamRequest {
 message SampleClientStreamResponse {}
 
 service SampleStreamService {
-  rpc SampleClientStream(SampleClientStreamRequest) returns (SampleClientStreamResponse) {}
+  rpc SampleClientStream(stream SampleClientStreamRequest) returns (SampleClientStreamResponse);
 }
