@@ -1,14 +1,14 @@
 desc: client streamingを行える
 runners:
-  greq:
-    addr: "http://127.0.0.1"
+  grpc:
+    addr: "127.0.0.1:8443"
     tls: true
-    cacert: "../../../../../ca.crt"
-    cert: "../../../../../ca.csr"
-    key: "../../../../../ca.key"
+    cacert: "../../cacert.pem"
+    cert: "../../cert.pem"
+    key: "../../key.pem"
 steps:
   - desc: リクエスト
-    greq:
+    grpc:
       sample_stream.v1.SampleStreamService/SampleClientStream:
         messages:
           - file_info:
